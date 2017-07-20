@@ -7,7 +7,7 @@ const Command = require('command'),
 //Example: 'changer misterdoctor height 7' command apply a +3 height changer to misterdoctor.
 
 //List of Abnormality ID:
-	abnId=[7000005,7000001,7000012,7000013,7000014,7777001],  //ID
+	abnId=[7000005,7000001,7000012,7000013,7000014,7777001],  //Abnormality ID
 	abnCmd=['grow','bighead','chest','height','thigh','selfconfidence'] //chat command argument, corresponding to the ID above.
 	
 //Defaults
