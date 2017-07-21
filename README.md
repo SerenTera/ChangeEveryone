@@ -54,8 +54,11 @@ For reference, they correspond to the following abnormality id respectively: 700
 While most abnomalities uses 1 as stack count, some changers, such as height, grow, thigh and chest changers has a stack on them (+3 thigh changer, -2 height changer etc...) Stack count controls the stack for these changers.
 
 Normally, the stack are:
+
 -3 to -1 : stack count 1-3 (1 corresponds to -3, 3 corresponds to -1)
+
 0: stack count 4
+
 +1 to +3 : stack count 5-7 (5 corresponds to +1, 7 corrresponds to +3)
 
 So, if I want to apply a +3 height change to seren, I will type in 'changer seren height 7' (or changersave if i want to save this into savefile).
