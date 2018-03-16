@@ -183,14 +183,14 @@ module.exports = function changeevery(dispatch) {
 	
 	
 	//Dispatches
-	dispatch.hook('S_SPAWN_USER', 12, {fake:null}, event => {
+	dispatch.hook('S_SPAWN_USER', 12, {order:100,filter:{fake: null}}, event => {
 		if(enabled)	{
 			if(!playernamelist.includes(event.name.toLowerCase())) {
 				players.push(event.gameId),
 				playernamelist.push(event.name.toLowerCase())
 			}
 		}
-
+		
 		if(autochange) {
 			if(customdata[event.name.toLowerCase()]) {
 				if(MESSAGE_AUTO_CHANGES) command.message('(ChangeEveryone) Changed '+event.name)
@@ -203,7 +203,7 @@ module.exports = function changeevery(dispatch) {
 		}
 	})
 	
-	dispatch.hook('S_DESPAWN_USER',1,event => {
+	dispatch.hook('S_DESPAWN_USER',1, {filter:{fake:null}}, event => {
 		if(enabled) {
 			for(var i=0; i<players.length ;i++) {  //Must use classic for loop to search for objects in arrays (Alternative?)
 				if(event.target.equals(players[i])) {	
