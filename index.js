@@ -183,10 +183,10 @@ module.exports = function changeevery(dispatch) {
 	
 	
 	//Dispatches
-	dispatch.hook('S_SPAWN_USER', 3, event => {
+	dispatch.hook('S_SPAWN_USER', 12, {fake:null}, event => {
 		if(enabled)	{
 			if(!playernamelist.includes(event.name.toLowerCase())) {
-				players.push(event.cid),
+				players.push(event.gameId),
 				playernamelist.push(event.name.toLowerCase())
 			}
 		}
@@ -196,7 +196,7 @@ module.exports = function changeevery(dispatch) {
 				if(MESSAGE_AUTO_CHANGES) command.message('(ChangeEveryone) Changed '+event.name)
 				process.nextTick(() => {  	//Must send abnormalities after S_SPAWN_USER
 					Object.entries(customdata[event.name.toLowerCase()]).forEach(([key,value]) => {
-						abbegin(event.cid,parseInt(key),parseInt(value))
+						abbegin(event.gameId,parseInt(key),parseInt(value))
 					})
 				})
 			}
@@ -215,7 +215,7 @@ module.exports = function changeevery(dispatch) {
 		}
 	})
 
-	dispatch.hook('S_LOAD_TOPO',1, event => { 
+	dispatch.hook('S_LOAD_TOPO','raw', event => { 
 		players=[],
 		playernamelist=[]
 	})
