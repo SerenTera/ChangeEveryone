@@ -40,6 +40,7 @@ General commands:
 `changerstack <stackcount>`: Changes the default stack to stackcount. Will be resetted on logout, change 'stacks' in index.js defaults for a permanent change. Example: 'changerstack 4' changes the default stack to 4 only for that proxy session.
 
 Changer commands:
+
 `changer <name> <changer name> <stack count(optional)>`: Applies \<changers name> onto the \<name> target, with the stack count being the one in this command (if entered) OR the default one, if left blank. See 'changers' section in this readme for more info. Does NOT SAVE the changers applied on the target unless autosave is enabled. Example: 'changer seren height 3' applies a -1 height changer to seren. 'changer seren height' applies the default (stacks=1 is default unless changed) stack of height changer to seren (-3 height change if left default stack of 1). 
 
 `changersave <name> <changer name> <stack count(optional)>`: Same principle as above, but this time, it saves the name, changer applied and stack to the save file.  Example: 'changer seren height 3' applies a -1 height changer to seren and save it. Not entering stack count uses default stack instead.
