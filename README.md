@@ -25,6 +25,15 @@ There are 3 defaults that are not changeable by commands. They can be changed un
 - MESSAGE_CHANGES     			(This notifies you via ingame messages for changer commands confirmation. True to notify but can be spammy)
 
 Other various defaults can be changed in index.js too. Refer to comments in the file.
+```
+let DELETE_ALSO_ENDS_CHANGERS=true, //This changes whether using command 'changerdelete' will end the changers on the target too. True to end together with deletion.
+	MESSAGE_AUTO_CHANGES=true, 		//This notifies you via ingame messages if someone has been automatically changed. True to notify.
+	MESSAGE_CHANGES=true,			//This notifies you via ingame messages for changer command confirmation. True to notify and spam.
+	enabled=true,					//Default Enable/disable of module. True to Enable
+	autochange=true, 				//Default Enable/disable of auto changing save person. True to autochange saved targets.
+	autosave=false,					//Default auto saving applied changers on others. True to automatically save on every changer command.
+	stacks=1						//Default number of stack.
+```
 
 ## Commands
 Type commands in /proxy chat (aka /8 chat) or prefix with '!' if you want to type in any other chat channels. Name or ign can be in any capitalization, only spelling matters.
