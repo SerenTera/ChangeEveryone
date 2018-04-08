@@ -1,12 +1,14 @@
 # ChangeEveryone
-Latest version: v1.1.0
+Latest version: v2.0.0
 
 A Tera Proxy module that applies changers/ abnormalities onto others. Client Sided.
 
 ## Updates
-Version 1.0.0: Initial Commit
+Version History
+ - 1.0.0 : Initial Commit
+ - 1.1.0 : Male Brawler fixes
+ - 2.0.0 : Added Auto update by Caali's Proxy, created config.json for all configuration needs
 
-Version 1.1.0: Male Brawler fixes
 
 ## Quick Info
 Requires:
@@ -17,24 +19,26 @@ Requires:
 ## General instruction
 This module applies common shape changers and has support for customised abnormality you want to apply via ID. Also allows you to save the applied changers and reapply them automatically on saved targets. Savefile is created in the same module folder (playerdata.json) when targets are saved, working through logouts and location changes.
 
-There are 3 defaults that are not changeable by commands. They can be changed under the 'defaults' section in index.js :
-- DELETE_ALSO_ENDS_CHANGERS (This changes whether using command 'changerdelete' will end the changers on the target too. True to end together with deletion)
+## Config
+Change your configuration in config.json. If not found, it will be generated on first login based on the default config.
 
-- MESSAGE_AUTO_CHANGES		  (This notifies you via ingame messages if someone that is saved in the savefile has been automatically changed. True to notify)
+The options are listed below: 
 
-- MESSAGE_CHANGES     			(This notifies you via ingame messages for changer commands confirmation. True to notify but can be spammy)
+`DELETE_ALSO_ENDS_CHANGERS`: This changes whether using command 'changerdelete' will end the changers on the target too. True to end together with deletion.
 
-Other various defaults can be changed in index.js too. Refer to comments in the file.
-```
-let DELETE_ALSO_ENDS_CHANGERS=true, //This changes whether using command 'changerdelete' will end the changers on the target too. True to end together with deletion.
-	MESSAGE_AUTO_CHANGES=true, 		//This notifies you via ingame messages if someone has been automatically changed. True to notify.
-	MESSAGE_CHANGES=true,			//This notifies you via ingame messages for changer command confirmation. True to notify and spam.
-	enabled=true,					//Default Enable/disable of module. True to Enable
-	autochange=true, 				//Default Enable/disable of auto changing save person. True to autochange saved targets.
-	autosave=false,					//Default auto saving applied changers on others. True to automatically save on every changer command.
-	stacks=1						//Default number of stack.
-```
+`MESSAGE_AUTO_CHANGES`: This notifies you via ingame messages if someone has been automatically changed. True to notify.
 
+`MESSAGE_CHANGES`: This notifies you via ingame messages for changer command confirmation. True to notify and spam.
+
+`enabled`: Default Enable/disable of module. True to Enable
+
+`autochange`: Default Enable/disable of auto changing save person. True to autochange saved targets.
+
+`autosave`: Default auto saving applied changers on others. True to automatically save on every changer command.
+
+`stacks`: Default number of stack.
+
+`abnId` : This is where the list of abnormalities that is defined are found. For unlisted id, you can add more into this list if you so wish (just follow the format of `name:id`). Commands will still allow you to use abnormality id directly too (See `custom changer` section).
 ## Commands
 Type commands in /proxy chat (aka /8 chat) or prefix with '!' if you want to type in any other chat channels. Name or ign can be in any capitalization, only spelling matters.
 
