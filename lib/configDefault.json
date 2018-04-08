@@ -1,0 +1,18 @@
+{
+	"moduleVersion":"2.0.0",
+	"DELETE_ALSO_ENDS_CHANGERS":true,
+	"MESSAGE_AUTO_CHANGES":true, 		
+	"MESSAGE_CHANGES":true,			
+	"enabled":true,					
+	"autochange":true, 				
+	"autosave":false,				
+	"stacks":1,				
+	"abnId":{ 
+		"grow":7000005,
+		"bighead":7000001,
+		"chest":7000012,
+		"height":7000013,
+		"thigh":7000014,
+		"selfconfidence":7777001
+	}
+}
