@@ -1,5 +1,4 @@
-const Command = require('command'),
-	path = require('path'),
+const path = require('path'),
 	fs = require('fs'),
 	Long = require('long'),
 	defaultConfig = require('./lib/configDefault.json')
@@ -8,8 +7,8 @@ const Command = require('command'),
 //Example: 'changer misterdoctor height 7' command apply a +3 height changer to misterdoctor.
 //Configs in config.json, If not present, will automatically be generated on first login with default presets.
 	
-module.exports = function changeevery(dispatch) {
-	const command = Command(dispatch)
+module.exports = function changeevery(mod) {
+	
 	
 	let players = {},
 		customdata = {},
@@ -50,167 +49,170 @@ module.exports = function changeevery(dispatch) {
 	}	
 	
 	//Commands
-	command.add('changertoggle', () => {
-		if(enabled) {         //Disabling Module flushes saved lists
-			enabled=false
-			players={}
-			command.message('(ChangeEveryone) Module Disabled')
-		}
-		else {
-			enabled=true
-			command.message('(ChangeEveryone) Module Enabled')
-		}
-	})	
+	mod.command.add('changer', {
+		$default() {
+			mod.command.message('(ChangeEveryone) Wrong Command')
+		},	
+		
+		toggle() {
+			if(enabled) {         //Disabling Module flushes saved lists
+				enabled=false
+				players={}
+				mod.command.message('(ChangeEveryone) Module Disabled')
+			}
+			else {
+				enabled=true
+				mod.command.message('(ChangeEveryone) Module Enabled')
+			}
+		},	
 	
 	
-	command.add('changerautosave', () => {
-		autosave = !autosave
-		command.message(`(ChangeEveryone) Autosave ${autosave ? 'Enabled' : 'Disabled'}`)
-	})
+		autosave() {
+			autosave = !autosave
+			mod.command.message(`(ChangeEveryone) Autosave ${autosave ? 'Enabled' : 'Disabled'}`)
+		},
 	
 	
-	command.add('changerautochange', () => {
-		autochange = !autochange
-		command.message(`(ChangeEveryone) Autochange ${autochange ? 'Enabled' : 'Disabled'}`)
-	})
+		autochange() {
+			autochange = !autochange
+			mod.command.message(`(ChangeEveryone) Autochange ${autochange ? 'Enabled' : 'Disabled'}`)
+		},
 	
 	
-	command.add('changerstack', stack => {
-		stacks=parseInt(stack),
-		command.message('(ChangeEveryone) Default stack changed to '+stacks)
-	})
+		stack(stack) {
+			stacks=parseInt(stack),
+			mod.command.message('(ChangeEveryone) Default stack changed to '+stacks)
+		},
 	
 	
-	command.add('changer', (name,cmd,cmdstack) => {
-		cmd = cmd.toLowerCase()
-		if(cmdstack===undefined) cmdstack = stacks
-		if(!abnId[cmd] && isNaN(cmd)) {
-			command.message('(ChangeEveryone) Incorrect Abnormality name/Abnormality is not a number.') 
-			return
-		}
-		changed = false
-		Object.entries(players).forEach(([key,value]) => {
-			if(name.toLowerCase() == value) {
-				applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
-				changed = true
+		apply(name,cmd,cmdstack) {
+			cmd = cmd.toLowerCase()
+			if(cmdstack===undefined) cmdstack = stacks
+			if(!abnId[cmd] && isNaN(cmd)) {
+				mod.command.message('(ChangeEveryone) Incorrect Abnormality name/Abnormality is not a number.') 
 				return
 			}
-		})
-		
-		if(!changed) {
-			enabled ? command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
-			command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
-		}	
-	})
-	
-	
-	command.add('changersave', (name,cmd,cmdstack) => {
-		cmd = cmd.toLowerCase()
-		if(cmdstack === undefined) cmdstack = stacks
-		if(!abnId[cmd] && isNaN(cmd)) {
-			command.message('(ChangeEveryone) Incorrect Abnormality name/Abnormality is not a number.') 
-			return
-		}
-		
-		changed = false
-		Object.entries(players).forEach(([key,value]) => {
-			if(name.toLowerCase() === value) {
-				saveonce = true
-				applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
-				changed = true
-				return
-			}
-		})
-		
-		if(!changed) {
-			enabled ? command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
-			command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
-		}
-	})
-	
-	
-	command.add('changerend', (name,cmd) => {		
-		cmd = cmd.toLowerCase()
-		if(!abnId[cmd] && (isNaN(cmd) || cmd==='all')) {
-			command.message('(ChangeEveryone) Incorrect Abnormality name/ Abnormality is not a number/ "all" command wrongly spelled') 
-			return
-		}
-		
-		changed = false
-		Object.entries(players).forEach(([key,value]) => {		
-			if(name.toLowerCase() === value) {
-				if(cmd ==='all' && customdata[name.toLowerCase()]) {
-					for(let k of Object.keys(customdata[name.toLowerCase()])) {
-						abend(value,parseInt(k))
-					}
-					if(MESSAGE_CHANGES) command.message('(ChangeEveryone) Ended all changers on '+name) 
-				}
-			
-				else { 
-					abend(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd))
-					if(MESSAGE_CHANGES) command.message('(ChangeEveryone) Ended changer '+cmd+' on '+name) 
-					
-				}
-				if(autosave) deleteentry(name.toLowerCase(),cmd);
-				changed = true	
-				return
-			}
-		})
-		
-		if(!changed) {
-			enabled ? command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
-			command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
-		}
-	})
-	
-	
-	command.add('changerdelete', (name,cmd) => {
-		cmd = cmd.toLowerCase()
-		
-		if(!abnId[cmd] && (isNaN(cmd) || cmd==='all')) {
-			command.message('(ChangeEveryone) Incorrect Abnormality name/ Abnormality is not a number/ "all" command wrongly spelled') 
-			return
-		}
-		if(!DELETE_ALSO_ENDS_CHANGERS) deleteentry(name.toLowerCase(),cmd)
-		
-		else {
 			changed = false
-			Object.entries(players).forEach(([key,value]) => {		
-				if(name.toLowerCase() === value) {
-					if(cmd==='all' && customdata[name.toLowerCase()]) {
-						for(let k of Object.keys(customdata[name.toLowerCase()])) {
-							abend(value,parseInt(k))
-						}
-						if(MESSAGE_CHANGES) command.message('(ChangeEveryone) Ended all changers on '+name) 
-					}
-			
-					else { 
-						abend(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd))
-						if(MESSAGE_CHANGES) command.message('(ChangeEveryone) Ended changer '+cmd+' on '+name) 
-					}
-					deleteentry(name.toLowerCase(),cmd)
+			Object.entries(players).forEach(([key,value]) => {
+				if(name.toLowerCase() == value) {
+					applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
 					changed = true
 					return
 				}
 			})
+		
 			if(!changed) {
-				enabled ? command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
-				command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
+				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
+				mod.command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
+			}	
+		},
+	
+	
+		save(name,cmd,cmdstack) {
+			cmd = cmd.toLowerCase()
+			if(cmdstack === undefined) cmdstack = stacks
+			if(!abnId[cmd] && isNaN(cmd)) {
+				mod.command.message('(ChangeEveryone) Incorrect Abnormality name/Abnormality is not a number.') 
+				return
+			}
+		
+			changed = false
+			Object.entries(players).forEach(([key,value]) => {
+				if(name.toLowerCase() === value) {
+					saveonce = true
+					applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
+					changed = true
+					return
+				}
+			})
+		
+			if(!changed) {
+				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
+				mod.command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
+			}
+		},
+	
+	
+		end(name,cmd) {		
+			cmd = cmd.toLowerCase()
+			if(!abnId[cmd] && (isNaN(cmd) || cmd==='all')) {
+				mod.command.message('(ChangeEveryone) Incorrect Abnormality name/ Abnormality is not a number/ "all" command wrongly spelled') 
+				return
+			}
+		
+			changed = false
+			Object.entries(players).forEach(([key,value]) => {		
+				if(name.toLowerCase() === value) {
+					if(cmd ==='all' && customdata[name.toLowerCase()]) {
+						for(let k of Object.keys(customdata[name.toLowerCase()])) {
+							abend(value,parseInt(k))
+						}
+						if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended all changers on '+name) 
+					}
+			
+					else { 
+						abend(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd))
+						if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended changer '+cmd+' on '+name) 
+					
+					}
+					if(autosave) deleteentry(name.toLowerCase(),cmd);
+					changed = true	
+					return
+				}
+			})
+		
+			if(!changed) {
+				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
+				mod.command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
+			}
+		},
+		
+	
+		delete(name,cmd) {
+			cmd = cmd.toLowerCase()
+		
+			if(!abnId[cmd] && (isNaN(cmd) || cmd==='all')) {
+				mod.command.message('(ChangeEveryone) Incorrect Abnormality name/ Abnormality is not a number/ "all" command wrongly spelled') 
+				return
+			}
+			if(!DELETE_ALSO_ENDS_CHANGERS) deleteentry(name.toLowerCase(),cmd)
+		
+			else {
+				changed = false
+				Object.entries(players).forEach(([key,value]) => {		
+					if(name.toLowerCase() === value) {
+						if(cmd==='all' && customdata[name.toLowerCase()]) {
+							for(let k of Object.keys(customdata[name.toLowerCase()])) abend(value,parseInt(k));
+							if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended all changers on '+name) 
+						}	
+			
+						else { 
+							abend(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd))
+							if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended changer '+cmd+' on '+name) 
+						}
+						deleteentry(name.toLowerCase(),cmd)
+						changed = true
+						return
+					}
+				})
+				if(!changed) {
+					enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
+					mod.command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
+				}
 			}
 		}
-
 	})
 	
 	
 	//Dispatches
-	dispatch.hook('S_SPAWN_USER', 13, {order:100,filter:{fake: null}}, event => {
+	mod.hook('S_SPAWN_USER', 13, {order:100,filter:{fake: null}}, event => {
 		if(enabled)	{
 			if(!players[event.gameId]) players[event.gameId] = event.name.toLowerCase()
 		}
 		
 		if(autochange) {
 			if(customdata[event.name.toLowerCase()]) {
-				if(MESSAGE_AUTO_CHANGES) command.message('(ChangeEveryone) Changed '+event.name)
+				if(MESSAGE_AUTO_CHANGES) mod.command.message('(ChangeEveryone) Changed '+event.name)
 				process.nextTick(() => {  	//Must send abnormalities after S_SPAWN_USER
 					Object.entries(customdata[event.name.toLowerCase()]).forEach(([key,value]) => {
 						abbegin(event.gameId,parseInt(key),parseInt(value))
@@ -221,11 +223,11 @@ module.exports = function changeevery(dispatch) {
 		
 	})
 	
-	dispatch.hook('S_DESPAWN_USER',3, {filter:{fake:null}}, event => {
+	mod.hook('S_DESPAWN_USER',3, {filter:{fake:null}}, event => {
 		if(enabled && players[event.gameId]) delete players[event.gameId]
 	})
 
-	dispatch.hook('S_LOAD_TOPO','raw', () => { 
+	mod.hook('S_LOAD_TOPO','raw', () => { 
 		players={}
 	})
 	
@@ -233,7 +235,7 @@ module.exports = function changeevery(dispatch) {
 	//Functions
 	function abbegin(playerid,abid,stack) {	
 		if(!Long.isLong(playerid)) playerid = Long.fromString(playerid, true) //Convert to Long object again if not a long object
-		dispatch.toClient('S_ABNORMALITY_BEGIN', 2, {
+		mod.send('S_ABNORMALITY_BEGIN', 2, {
 			target: playerid, 
 			source: playerid, 
 			id:abid,
@@ -246,7 +248,7 @@ module.exports = function changeevery(dispatch) {
 	
 	function abend(playerid,abid) {
 		if(!Long.isLong(playerid)) playerid = Long.fromString(playerid, true)
-		dispatch.toClient('S_ABNORMALITY_END', 1, {
+		mod.send('S_ABNORMALITY_END', 1, {
 			target:playerid,
 			id:parseInt(abid)
 		})
@@ -257,7 +259,7 @@ module.exports = function changeevery(dispatch) {
 		if(!isNaN(stack)) {  //Check stacks is a number
 			abbegin(playerid,parseInt(abid),parseInt(stack))
 			
-			if(MESSAGE_CHANGES) command.message('(ChangeEveryone) Changer '+changername+ ' (stack: '+stack+') applied on '+ name)
+			if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Changer '+changername+ ' (stack: '+stack+') applied on '+ name)
 
 			if(autosave || saveonce) {
 				if(!customdata[name]) Object.assign(customdata,{[name]:{}}) //create object if it does not exist. Important.
@@ -265,12 +267,12 @@ module.exports = function changeevery(dispatch) {
 				customdata[name][abid] = stack
 				saveonce=false
 				saveplayer()
-				command.message('(ChangeEveryone) Save file Written. Added new entry for '+ name)
+				mod.command.message('(ChangeEveryone) Save file Written. Added new entry for '+ name)
 			}
 		}
 		
 		else
-			command.message('(ChangeEveryone) Invalid stack input. Please only input numbers for stack count.')
+			mod.command.message('(ChangeEveryone) Invalid stack input. Please only input numbers for stack count.')
 	}
 	
 	
@@ -280,7 +282,7 @@ module.exports = function changeevery(dispatch) {
 			if(cmd==='all')  {
 				delete customdata[name]
 				saveplayer()
-				command.message('(ChangeEveryone) Deleted all saved changer entries for '+name) 
+				mod.command.message('(ChangeEveryone) Deleted all saved changer entries for '+name) 
 			}
 			
 			// Delete those changers with string words
@@ -288,9 +290,9 @@ module.exports = function changeevery(dispatch) {
 				if(customdata[name][abnId[cmd]]) {
 					delete customdata[name][abnId[cmd]]
 					saveplayer()
-					command.message('(ChangeEveryone) Deleted changer entry '+cmd+' for '+name)
+					mod.command.message('(ChangeEveryone) Deleted changer entry '+cmd+' for '+name)
 				}
-				else command.message('(ChangeEveryone) No entry '+cmd+' in savefile found for '+name)
+				else mod.command.message('(ChangeEveryone) No entry '+cmd+' in savefile found for '+name)
 			}
 			
 			// Delete customised changers inputted using Id
@@ -298,17 +300,17 @@ module.exports = function changeevery(dispatch) {
 				if(customdata[name][parseInt(cmd)]) {
 					delete customdata[name][parseInt(cmd)]
 					saveplayer()
-					command.message('(ChangeEveryone) Deleted changer entry '+cmd+' for '+name)
+					mod.command.message('(ChangeEveryone) Deleted changer entry '+cmd+' for '+name)
 				}
-				else command.message('(ChangeEveryone) No entry '+cmd+' in savefile found for '+name)
+				else mod.command.message('(ChangeEveryone) No entry '+cmd+' in savefile found for '+name)
 			}
 			
 			// Invalid Command
 			else
-				command.message('(ChangeEveryone) Invalid changer name/ changer ID input, check command.')
+				mod.command.message('(ChangeEveryone) Invalid changer name/ changer ID input, check command.')
 		}
 		else
-			command.message('(ChangeEveryone) No entries for '+ name+' found in savefile. Check spelling of name')
+			mod.command.message('(ChangeEveryone) No entries for '+ name+' found in savefile. Check spelling of name')
 	}
 	
 	
@@ -316,7 +318,7 @@ module.exports = function changeevery(dispatch) {
 		if(fileopen) {
 			fileopen = false
 			fs.writeFile(path.join(__dirname,'playerdata.json'), JSON.stringify(customdata,null,"\t"), err => {
-				if(err) command.message('(ChangeEveryone) Error writing file, attempting to rewrite. If message persist, restart game and proxy')
+				if(err) mod.command.message('(ChangeEveryone) Error writing file, attempting to rewrite. If message persist, restart game and proxy')
 				else fileopen = true
 			})
 		}
