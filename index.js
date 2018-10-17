@@ -235,7 +235,7 @@ module.exports = function changeevery(mod) {
 	//Functions
 	function abbegin(playerid,abid,stack) {	
 		if(!Long.isLong(playerid)) playerid = Long.fromString(playerid, true) //Convert to Long object again if not a long object
-		mod.send('S_ABNORMALITY_BEGIN', 2, {
+		mod.send('S_ABNORMALITY_BEGIN', 3, {
 			target: playerid, 
 			source: playerid, 
 			id:abid,
