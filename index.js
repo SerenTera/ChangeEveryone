@@ -1,6 +1,5 @@
 const path = require('path'),
 	fs = require('fs'),
-	Long = require('long'),
 	defaultConfig = require('./lib/configDefault.json')
 //Note: For changers with stack count (like height/chest/thigh/grow), Use stack = 1,2,3 for -3 to -1, 4 for regular 0 (no effect) and 5,6,7 for +1 to +3. Respectively.
 //You can customise stacks by changing defaults OR use a stack argument when using commands 'changer' or 'changersave'.
@@ -234,7 +233,6 @@ module.exports = function changeevery(mod) {
 
 	//Functions
 	function abbegin(playerid,abid,stack) {	
-		if(!Long.isLong(playerid)) playerid = Long.fromString(playerid, true) //Convert to Long object again if not a long object
 		mod.send('S_ABNORMALITY_BEGIN', 3, {
 			target: playerid, 
 			source: playerid, 
@@ -247,7 +245,6 @@ module.exports = function changeevery(mod) {
 	}
 	
 	function abend(playerid,abid) {
-		if(!Long.isLong(playerid)) playerid = Long.fromString(playerid, true)
 		mod.send('S_ABNORMALITY_END', 1, {
 			target:playerid,
 			id:parseInt(abid)

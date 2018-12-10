@@ -1,12 +1,11 @@
 {
     "files": {
-        "Abnormality ids.txt": "213db325c3cd9965c0eef6b8964ffdc197bb3fdff26c44dd14de0d5e700e22c4",
-        "index.js": "8c3228102bfd562f9a00fde4ae18bfd2a97a7e0ac49c8891853940c3f81886a5",
-        "module.json": "56c75bc4965b3cd0f9ff07793c31c577ac623b13cbc5efa6eb44ed9c8f599c0d",
+        "index.js": "89fcabd34a1796269827e563ae5dac3e5f74976ee779c9d62f9f47ee9d440fb5",
+        "module.json": "55c561b8df1892186ca392ac92a26bbbb75eb0f6ac9f77bd479a470963c680fd",
         "lib/configDefault.json": "4650e4dbba13a482de4c031ddaad8b4719ae4d5ad37f8d425722b0482c5306e3"
     },
     "defs": {
-        "S_ABNORMALITY_BEGIN": 2,
+        "S_ABNORMALITY_BEGIN": 3,
         "S_ABNORMALITY_END": 1,
         "S_SPAWN_USER": 13,
         "S_DESPAWN_USER": 3
