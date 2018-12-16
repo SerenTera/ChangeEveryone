@@ -8,9 +8,8 @@ const path = require('path'),
 	
 module.exports = function changeevery(mod) {
 	
-	
-	let players = {},
-		customdata = {},
+	let customdata = {},
+		players = new Map(),
 		fileopen = true,
 		changed = false,
 		debugs = false,
@@ -56,7 +55,7 @@ module.exports = function changeevery(mod) {
 		toggle() {
 			if(enabled) {         //Disabling Module flushes saved lists
 				enabled=false
-				players={}
+				players.clear()
 				mod.command.message('(ChangeEveryone) Module Disabled')
 			}
 			else {
@@ -92,13 +91,13 @@ module.exports = function changeevery(mod) {
 				return
 			}
 			changed = false
-			Object.entries(players).forEach(([key,value]) => {
+			for(let [key,value] of players) {
 				if(name.toLowerCase() == value) {
 					applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
 					changed = true
 					return
 				}
-			})
+			}
 		
 			if(!changed) {
 				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
@@ -116,14 +115,14 @@ module.exports = function changeevery(mod) {
 			}
 		
 			changed = false
-			Object.entries(players).forEach(([key,value]) => {
+			for(let [key,value] of players) {
 				if(name.toLowerCase() === value) {
 					saveonce = true
 					applyabnormal(key,abnId[cmd] ? abnId[cmd] : parseInt(cmd),cmdstack,name,cmd)
 					changed = true
 					return
 				}
-			})
+			}
 		
 			if(!changed) {
 				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
@@ -140,11 +139,11 @@ module.exports = function changeevery(mod) {
 			}
 		
 			changed = false
-			Object.entries(players).forEach(([key,value]) => {		
+			for(let [key,value] of players) {		
 				if(name.toLowerCase() === value) {
 					if(cmd ==='all' && customdata[name.toLowerCase()]) {
 						for(let k of Object.keys(customdata[name.toLowerCase()])) {
-							abend(value,parseInt(k))
+							abend(key,parseInt(k))
 						}
 						if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended all changers on '+name) 
 					}
@@ -158,7 +157,7 @@ module.exports = function changeevery(mod) {
 					changed = true	
 					return
 				}
-			})
+			}
 		
 			if(!changed) {
 				enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
@@ -178,10 +177,10 @@ module.exports = function changeevery(mod) {
 		
 			else {
 				changed = false
-				Object.entries(players).forEach(([key,value]) => {		
+				for(let [key,value] of players) {		
 					if(name.toLowerCase() === value) {
 						if(cmd==='all' && customdata[name.toLowerCase()]) {
-							for(let k of Object.keys(customdata[name.toLowerCase()])) abend(value,parseInt(k));
+							for(let k of Object.keys(customdata[name.toLowerCase()])) abend(key,parseInt(k));
 							if(MESSAGE_CHANGES) mod.command.message('(ChangeEveryone) Ended all changers on '+name) 
 						}	
 			
@@ -193,7 +192,7 @@ module.exports = function changeevery(mod) {
 						changed = true
 						return
 					}
-				})
+				}
 				if(!changed) {
 					enabled ? mod.command.message('(ChangeEveryone) No name found in saved list/Incorrect argument input.') :
 					mod.command.message('(ChangeEveryone) Module is Disabled! Enable module and re-enter region to load user names')
@@ -206,7 +205,7 @@ module.exports = function changeevery(mod) {
 	//Dispatches
 	mod.hook('S_SPAWN_USER', 13, {order:100,filter:{fake: null}}, event => {
 		if(enabled)	{
-			if(!players[event.gameId]) players[event.gameId] = event.name.toLowerCase()
+			players.set(event.gameId,event.name.toLowerCase())
 		}
 		
 		if(autochange) {
@@ -223,11 +222,11 @@ module.exports = function changeevery(mod) {
 	})
 	
 	mod.hook('S_DESPAWN_USER',3, {filter:{fake:null}}, event => {
-		if(enabled && players[event.gameId]) delete players[event.gameId]
+		if(enabled && players.has(event.gameId)) players.delete(event.gameId)
 	})
 
 	mod.hook('S_LOAD_TOPO','raw', () => { 
-		players={}
+		players.clear()
 	})
 	
 
